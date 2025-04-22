@@ -10,7 +10,7 @@ platforms:
   web:
   windows:
 topics:
-  - vm
+  - vm2
   - compiler
   - interpreter
   - dart
