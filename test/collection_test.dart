@@ -206,4 +206,86 @@ void main() {
       expect(runtime.executeLib('package:eval_test/main.dart', 'main'), true);
     });
   });
+
+  group('Dart 3 Migration', () {
+    late Compiler compiler;
+
+    setUp(() {
+      compiler = Compiler();
+    });
+
+    test('List.asMap()', () {
+      final runtime = compiler.compileWriteAndLoad({
+        'eval_test': {
+          'main.dart': '''
+            bool main() {
+              final list = [1, 2, 3, 4, 5];
+              final map = list.asMap();
+              print(map);
+              return list.length == map.length;
+            }
+          '''
+        }
+      });
+
+      expect(runtime.executeLib('package:eval_test/main.dart', 'main'), true);
+    });
+
+    test('Iterable Map sum values', () {
+      final runtime = compiler.compileWriteAndLoad({
+        'eval_test': {
+          'main.dart': '''
+            int main() {
+              final map = {'1':1, '2':2, '3':3, '4':4, '5':5};
+              var sum = 0;
+              int res = 0;
+              for (var entry in map.entries) {
+                print('\${entry.key}:\${entry.value}');
+                if ( entry.key == '1') {
+                  print('key 1');
+                }
+                if (entry.value == 1) {
+                  print('value 1');
+                }
+                res = entry.value;
+                print(res);
+                // sum += res;
+              }
+              return sum;
+            }
+          '''
+        }
+      });
+
+      expect(runtime.executeLib('package:eval_test/main.dart', 'main'), 15);
+    });
+
+    test('List.asMap2()', () {
+      final runtime = compiler.compileWriteAndLoad({
+        'eval_test': {
+          'main.dart': '''
+            dynamic main() {
+              final list = [1, 2, 3, 4, 5];
+              final map = list.asMap();
+              print(map);
+              var sum = 0;
+              for (var entry in map.entries) {
+                print('\${entry.key}:\${entry.value}');
+                sum += entry.value;
+              }
+              print(sum);
+              return map;
+            }
+          '''
+        }
+      });
+      var res = runtime.executeLib('package:eval_test/main.dart', 'main');
+      for (var item in res.entries) {
+        print(item);
+      }
+      print(res);
+      // expect(, 1);
+    });
+  });
+
 }
